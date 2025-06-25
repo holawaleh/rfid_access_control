@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Dashboard</h1>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>{{ total_cards }}</h4>
+                        <p class="mb-0">Total Cards</p>
+                    </div>
+                    <i class="fas fa-credit-card fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>{{ active_cards }}</h4>
+                        <p class="mb-0">Active Cards</p>
+                    </div>
+                    <i class="fas fa-check-circle fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-info">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>{{ total_doors }}</h4>
+                        <p class="mb-0">Total Doors</p>
+                    </div>
+                    <i class="fas fa-door-open fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-warning">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>{{ recent_logs|length }}</h4>
+                        <p class="mb-0">Recent Access</p>
+                    </div>
+                    <i class="fas fa-history fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Recent Access Logs</h5>
+    </div>
+    <div class="card-body">
+        {% if recent_logs %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Card UID</th>
+                        <th>User</th>
+                        <th>Status</th>
+                        <th>Location</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in recent_logs %}
+                    <tr>
+                        <td>{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                        <td><code>{{ log.card_uid }}</code></td>
+                        <td>{{ log.user.username if log.user else 'Unknown' }}</td>
+                        <td>
+                            {% if log.access_granted %}
+                                <span class="badge bg-success">Granted</span>
+                            {% else %}
+                                <span class="badge bg-danger">Denied</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ log.location }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-muted">No access logs available.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

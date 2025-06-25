@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Doors</h1>
+    <a href="{{ url_for('add_door') }}" class="btn btn-primary">
+        <i class="fas fa-plus me-2"></i>Add Door
+    </a>
+</div>
+
+<div class="row">
+    {% for door in doors %}
+    <div class="col-md-4 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">{{ door.name }}</h5>
+                <p class="card-text">{{ door.location or 'No location specified' }}</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="badge {% if door.is_locked %}bg-danger{% else %}bg-success{% endif %}">
+                        {% if door.is_locked %}Locked{% else %}Unlocked{% endif %}
+                    </span>
+                    <button class="btn btn-sm {% if door.is_locked %}btn-success{% else %}btn-warning{% endif %}" 
+                            onclick="toggleDoor({{ door.id }})">
+                        {% if door.is_locked %}Unlock{% else %}Lock{% endif %}
+                    </button>
+                </div>
+                {% if door.last_accessed %}
+                <small class="text-muted">Last accessed: {{ door.last_accessed.strftime('%Y-%m-%d %H:%M') }}</small>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% if not doors %}
+<div class="card">
+    <div class="card-body text-center">
+        <p class="text-muted">No doors configured.</p>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+function toggleDoor(doorId) {
+    fetch(`/doors/${doorId}/toggle`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            location.reload();
+        }
+    });
+}
+</script>
+{% endblock %}

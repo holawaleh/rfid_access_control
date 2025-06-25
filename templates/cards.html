@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">RFID Cards</h1>
+    <a href="{{ url_for('add_card') }}" class="btn btn-primary">
+        <i class="fas fa-plus me-2"></i>Add Card
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        {% if cards %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Card UID</th>
+                        <th>Assigned User</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>Last Used</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for card in cards %}
+                    <tr>
+                        <td><code>{{ card.card_uid }}</code></td>
+                        <td>{{ card.user.username if card.user else 'Unassigned' }}</td>
+                        <td>{{ card.description or '-' }}</td>
+                        <td>
+                            {% if card.is_active %}
+                                <span class="badge bg-success status-badge">Active</span>
+                            {% else %}
+                                <span class="badge bg-danger status-badge">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ card.last_used.strftime('%Y-%m-%d %H:%M') if card.last_used else 'Never' }}</td>
+                        <td>
+                            <a href="{{ url_for('toggle_card', card_id=card.id) }}" 
+                               class="btn btn-sm {% if card.is_active %}btn-warning{% else %}btn-success{% endif %}">
+                                {% if card.is_active %}Deactivate{% else %}Activate{% endif %}
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-muted">No RFID cards registered.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
